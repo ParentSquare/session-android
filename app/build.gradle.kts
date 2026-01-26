@@ -22,6 +22,10 @@ plugins {
 val huaweiEnabled = project.properties["huawei"] != null
 val hasIncludedLibSessionUtilProject: Boolean = System.getProperty("session.libsession_util.project.path", "").isNotBlank()
 
+// Auto-detect host architecture for faster debug builds (build only for your emulator's arch)
+val hostArch = System.getProperty("os.arch")
+val emulatorAbi = if (hostArch == "aarch64") "arm64-v8a" else "x86_64"
+
 configurations.configureEach {
     exclude(module = "commons-logging")
 }
@@ -120,10 +124,8 @@ android {
 
     splits {
         abi {
-            isEnable = !huaweiEnabled
-            reset()
-            include("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
-            isUniversalApk = true
+            // Disabled for interview - builds one universal APK instead of 5
+            isEnable = false
         }
     }
 
@@ -206,6 +208,11 @@ android {
             devNetDefaultOn(false)
             setAlternativeAppName("Session Debug")
             setAuthorityPostfix(".debug")
+
+            // Build only for the host's emulator architecture (faster debug builds)
+            ndk {
+                abiFilters += emulatorAbi
+            }
         }
     }
 
@@ -480,6 +487,8 @@ dependencies {
 
     playImplementation(libs.android.billing)
     playImplementation(libs.android.billing.ktx)
+
+    implementation(libs.onnxruntime.android)
 
     debugImplementation(libs.sqlite.web.viewer)
 }

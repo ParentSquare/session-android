@@ -133,11 +133,10 @@ public class MediaPickerItemFragment extends Fragment implements MediaPickerItem
 
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
-    switch (item.getItemId()) {
-      case R.id.mediapicker_menu_add:
-        adapter.setForcedMultiSelect(true);
-        viewModel.onMultiSelectStarted();
-        return true;
+    if (item.getItemId() == R.id.mediapicker_menu_add) {
+      adapter.setForcedMultiSelect(true);
+      viewModel.onMultiSelectStarted();
+      return true;
     }
     return false;
   }

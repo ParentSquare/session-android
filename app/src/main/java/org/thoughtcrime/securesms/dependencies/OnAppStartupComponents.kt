@@ -28,8 +28,6 @@ import org.thoughtcrime.securesms.tokenpage.TokenDataManager
 import org.thoughtcrime.securesms.util.AppVisibilityManager
 import org.thoughtcrime.securesms.util.CurrentActivityObserver
 import org.thoughtcrime.securesms.util.VersionDataFetcher
-import org.thoughtcrime.securesms.webrtc.CallMessageProcessor
-import org.thoughtcrime.securesms.webrtc.WebRtcCallBridge
 import javax.inject.Inject
 
 class OnAppStartupComponents private constructor(
@@ -51,7 +49,6 @@ class OnAppStartupComponents private constructor(
         tokenManager: TokenDataManager,
         expiringMessageManager: ExpiringMessageManager,
         currentActivityObserver: CurrentActivityObserver,
-        webRtcCallBridge: WebRtcCallBridge,
         cleanupInvitationHandler: CleanupInvitationHandler,
         pollerManager: PollerManager,
         proStatusManager: ProStatusManager,
@@ -60,7 +57,6 @@ class OnAppStartupComponents private constructor(
         removeGroupMemberHandler: RemoveGroupMemberHandler,
         destroyedGroupSync: DestroyedGroupSync,
         adminStateSync: AdminStateSync,
-        callMessageProcessor: CallMessageProcessor,
         pushRegistrationHandler: PushRegistrationHandler,
         tokenFetcher: TokenFetcher,
         versionDataFetcher: VersionDataFetcher,
@@ -83,7 +79,6 @@ class OnAppStartupComponents private constructor(
             tokenManager,
             expiringMessageManager,
             currentActivityObserver,
-            webRtcCallBridge,
             cleanupInvitationHandler,
             pollerManager,
             proStatusManager,
@@ -92,7 +87,6 @@ class OnAppStartupComponents private constructor(
             removeGroupMemberHandler,
             destroyedGroupSync,
             adminStateSync,
-            callMessageProcessor,
             pushRegistrationHandler,
             tokenFetcher,
             versionDataFetcher,

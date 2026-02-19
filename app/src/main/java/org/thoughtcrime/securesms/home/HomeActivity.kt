@@ -97,7 +97,6 @@ import org.thoughtcrime.securesms.util.fadeOut
 import org.thoughtcrime.securesms.util.push
 import org.thoughtcrime.securesms.util.show
 import org.thoughtcrime.securesms.util.start
-import org.thoughtcrime.securesms.webrtc.WebRtcCallActivity
 import javax.inject.Inject
 
 // Intent extra keys so we know where we came from
@@ -272,11 +271,6 @@ class HomeActivity : ScreenLockActionBarActivity(),
         binding.configOutdatedView.setOnClickListener {
             textSecurePreferences.setHasLegacyConfig(false)
             updateLegacyConfigView()
-        }
-
-        // in case a phone call is in progress, this banner is visible and should bring the user back to the call
-        binding.callInProgress.setOnClickListener {
-            startActivity(WebRtcCallActivity.getCallActivityIntent(this))
         }
 
         // Set up empty state view

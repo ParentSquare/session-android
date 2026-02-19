@@ -24,7 +24,6 @@ import org.thoughtcrime.securesms.permissions.Permissions
 import org.thoughtcrime.securesms.service.KeyCachingService
 import org.thoughtcrime.securesms.showSessionDialog
 import org.thoughtcrime.securesms.sskenvironment.TypingStatusRepository
-import org.thoughtcrime.securesms.webrtc.CallNotificationBuilder.Companion.areNotificationsEnabled
 import org.thoughtcrime.securesms.util.IntentUtils
 import java.time.Instant
 import java.time.ZonedDateTime
@@ -106,23 +105,9 @@ class PrivacySettingsPreferenceFragment : CorrectedPreferenceFragment() {
     }
 
     private fun setCall(isEnabled: Boolean) {
+        // Calling disabled for interview build
         (findPreference<Preference>(TextSecurePreferences.CALL_NOTIFICATIONS_ENABLED) as SwitchPreferenceCompat?)!!.isChecked =
             isEnabled
-        if (isEnabled && !areNotificationsEnabled(requireActivity())) {
-            // show a dialog saying that calls won't work properly if you don't have notifications on at a system level
-            showSessionDialog {
-                title(R.string.sessionNotifications)
-                text(R.string.callsNotificationsRequired)
-                button(R.string.sessionNotifications) {
-                    Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
-                        .putExtra(Settings.EXTRA_APP_PACKAGE, BuildConfig.APPLICATION_ID)
-                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        .takeIf { IntentUtils.isResolvable(requireContext(), it) }
-                        ?.let { startActivity(it) }
-                }
-                button(R.string.dismiss)
-            }
-        }
     }
 
     @Deprecated("Deprecated in Java")

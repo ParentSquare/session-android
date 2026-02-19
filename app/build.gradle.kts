@@ -10,13 +10,10 @@ plugins {
     alias(libs.plugins.kotlin.plugin.parcelize)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt.android)
-    alias(libs.plugins.dependency.analysis)
     alias(libs.plugins.google.services)
     alias(libs.plugins.protobuf.compiler)
 
-    id("generate-ip-country-data")
     id("rename-apk")
-    id("witness")
 }
 
 val huaweiEnabled = project.properties["huawei"] != null
@@ -375,9 +372,6 @@ dependencies {
         }
     }
 
-    val playImplementation = configurations.maybeCreate("playImplementation")
-    playImplementation(libs.google.play.review)
-    playImplementation(libs.google.play.review.ktx)
 
     if (huaweiEnabled) {
         val huaweiImplementation = configurations.maybeCreate("huaweiImplementation")
@@ -387,13 +381,11 @@ dependencies {
     implementation(libs.androidx.media3.exoplayer)
     implementation(libs.androidx.media3.ui)
     implementation(libs.conscrypt.android)
-    implementation(libs.android)
     implementation(libs.photoview)
     implementation(libs.glide)
     implementation(libs.glide.compose)
     implementation(libs.coil.compose)
     implementation(libs.coil.gif)
-    implementation(libs.android.image.cropper)
     implementation(libs.subsampling.scale.image.view) {
         exclude(group = "com.android.support", module = "support-annotations")
     }
@@ -405,14 +397,14 @@ dependencies {
     implementation(libs.jackson.databind)
     implementation(libs.okhttp)
     implementation(libs.phrase)
+    implementation(libs.rxbinding)
+    implementation(libs.android.image.cropper)
     implementation(libs.copper.flow)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.guava)
     implementation(libs.kovenant)
     implementation(libs.kovenant.android)
-    implementation(libs.opencsv)
     implementation(libs.androidx.work.runtime.ktx)
-    implementation(libs.rxbinding)
 
     if (hasIncludedLibSessionUtilProject) {
         implementation(
@@ -425,53 +417,14 @@ dependencies {
     }
 
     implementation(libs.kryo)
-    testImplementation(libs.junit)
-    testImplementation(libs.assertj.core)
-    testImplementation(libs.mockito.kotlin)
-    androidTestImplementation(libs.mockito.core)
-    androidTestImplementation(libs.mockito.kotlin)
-    testImplementation(libs.androidx.core)
-    testImplementation(libs.androidx.core.testing)
-    testImplementation(libs.kotlinx.coroutines.testing)
-    androidTestImplementation(libs.kotlinx.coroutines.testing)
-    androidTestImplementation(libs.androidx.core)
-    androidTestImplementation(libs.androidx.runner)
-    androidTestImplementation(libs.androidx.rules)
-
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.truth)
-    testImplementation(libs.truth)
-    androidTestImplementation(libs.truth)
-    testRuntimeOnly(libs.mockito.core)
-
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(libs.androidx.espresso.contrib)
-    androidTestImplementation(libs.androidx.espresso.intents)
-    androidTestImplementation(libs.androidx.espresso.accessibility)
-    androidTestImplementation(libs.androidx.espresso.web)
-    androidTestImplementation(libs.androidx.idling.concurrent)
-    androidTestImplementation(libs.androidx.espresso.idling.resource)
-    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
-    debugImplementation(libs.androidx.compose.ui.test.manifest)
-    androidTestUtil(libs.androidx.orchestrator)
-
-    testImplementation(libs.robolectric)
-    testImplementation(libs.robolectric.shadows.multidex)
-    testImplementation(libs.conscrypt.openjdk.uber)
-    testImplementation(libs.turbine)
 
     implementation(platform(libs.androidx.compose.bom))
-    testImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(platform(libs.androidx.compose.bom))
 
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.animation)
     implementation(libs.androidx.compose.ui.tooling)
     implementation(libs.androidx.compose.foundation.layout)
     implementation(libs.androidx.compose.material3)
-
-    androidTestImplementation(libs.androidx.ui.test.junit4.android)
-    debugImplementation(libs.androidx.compose.ui.test.manifest)
 
     implementation(libs.androidx.navigation.compose)
 
@@ -485,12 +438,7 @@ dependencies {
 
     implementation(libs.androidx.biometric)
 
-    playImplementation(libs.android.billing)
-    playImplementation(libs.android.billing.ktx)
-
     implementation(libs.onnxruntime.android)
-
-    debugImplementation(libs.sqlite.web.viewer)
 }
 
 fun getLastCommitTimestamp(): String {
@@ -525,5 +473,14 @@ androidComponents {
             .configureEach {
                 enabled = firebaseEnabledVariants.any { name.contains(it, true) }
             }
+    }
+}
+
+// For interview branch: only build playDebug variant to speed up builds
+androidComponents {
+    beforeVariants { variantBuilder ->
+        if (variantBuilder.name != "playDebug") {
+            variantBuilder.enable = false
+        }
     }
 }

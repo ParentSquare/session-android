@@ -50,8 +50,6 @@ import org.thoughtcrime.securesms.util.DonationManager.Companion.URL_DONATE
 import org.thoughtcrime.securesms.util.UserProfileModalCommands
 import org.thoughtcrime.securesms.util.UserProfileModalData
 import org.thoughtcrime.securesms.util.UserProfileUtils
-import org.thoughtcrime.securesms.webrtc.CallManager
-import org.thoughtcrime.securesms.webrtc.data.State
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
@@ -63,7 +61,6 @@ class HomeViewModel @Inject constructor(
     private val loginStateRepository: LoginStateRepository,
     private val typingStatusRepository: TypingStatusRepository,
     private val configFactory: ConfigFactory,
-    callManager: CallManager,
     private val storage: StorageProtocol,
     private val groupManager: GroupManagerV2,
     private val conversationRepository: ConversationRepository,
@@ -82,14 +79,7 @@ class HomeViewModel @Inject constructor(
     private val mutableIsSearchOpen = MutableStateFlow(false)
     val isSearchOpen: StateFlow<Boolean> get() = mutableIsSearchOpen
 
-    val callBanner: StateFlow<String?> = callManager.currentConnectionStateFlow.map {
-        // a call is in progress if it isn't idle nor disconnected
-        if (it !is State.Idle && it !is State.Disconnected) {
-            // call is started, we need to differentiate between in progress vs incoming
-            if (it is State.Connected) context.getString(R.string.callsInProgress)
-            else context.getString(R.string.callsIncomingUnknown)
-        } else null // null when the call isn't in progress / incoming
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), initialValue = null)
+    val callBanner: StateFlow<String?> = MutableStateFlow(null)
 
     private val _dialogsState = MutableStateFlow(DialogsState())
     val dialogsState: StateFlow<DialogsState> = _dialogsState

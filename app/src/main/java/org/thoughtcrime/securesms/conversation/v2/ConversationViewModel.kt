@@ -123,8 +123,6 @@ import org.thoughtcrime.securesms.util.UserProfileUtils
 import org.thoughtcrime.securesms.util.castAwayType
 import org.thoughtcrime.securesms.util.mapStateFlow
 import org.thoughtcrime.securesms.util.mapToStateFlow
-import org.thoughtcrime.securesms.webrtc.CallManager
-import org.thoughtcrime.securesms.webrtc.data.State
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -145,7 +143,6 @@ class ConversationViewModel @AssistedInject constructor(
     private val lokiAPIDb: LokiAPIDatabase,
     private val configFactory: ConfigFactory,
     private val groupManagerV2: GroupManagerV2,
-    private val callManager: CallManager,
     val legacyGroupDeprecationManager: LegacyGroupDeprecationManager,
     val dateUtils: DateUtils,
     expiredGroupManager: ExpiredGroupManager,
@@ -430,14 +427,7 @@ class ConversationViewModel @AssistedInject constructor(
 
     private val attachmentDownloadHandler = attachmentDownloadHandlerFactory.create(viewModelScope)
 
-    val callBanner: StateFlow<String?> = callManager.currentConnectionStateFlow.map {
-        // a call is in progress if it isn't idle nor disconnected and the recipient is the person on the call
-        if(it !is State.Idle && it !is State.Disconnected && callManager.recipient == recipient.address){
-            // call is started, we need to differentiate between in progress vs incoming
-            if(it is State.Connected) application.getString(R.string.callsInProgress)
-            else application.getString(R.string.callsIncomingUnknown)
-        } else null // null when the call isn't in progress / incoming
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
+    val callBanner: StateFlow<String?> = MutableStateFlow(null)
 
     val lastSeenMessageId: Flow<MessageId?>
         get() = threadIdFlow.flatMapLatest { id ->
@@ -558,7 +548,7 @@ class ConversationViewModel @AssistedInject constructor(
         return ConversationAppBarData(
             title = conversation.takeUnless { it.isLocalNumber }?.displayName() ?: application.getString(R.string.noteToSelf),
             pagerData = pagerData,
-            showCall = conversation.showCallMenu,
+            showCall = false, // Calling disabled for interview build
             showAvatar = showOptionsMenu,
             showSearch = showSearch,
             avatarUIData = avatarData,

@@ -54,18 +54,12 @@ import org.thoughtcrime.securesms.service.KeyCachingService
 import org.thoughtcrime.securesms.util.AvatarUtils
 import org.thoughtcrime.securesms.util.SessionMetaProtocol.canUserReplyToNotification
 import org.thoughtcrime.securesms.util.SpanUtil
-import org.thoughtcrime.securesms.webrtc.CallNotificationBuilder.Companion.WEBRTC_NOTIFICATION
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Provider
 import kotlin.concurrent.Volatile
 
-/**
- * Handles posting system notifications for new messages.
- *
- *
- * @author Moxie Marlinspike
- */
+private const val WEBRTC_NOTIFICATION = 313388
 private const val CONTENT_SIGNATURE = "content_signature"
 
 class DefaultMessageNotifier @Inject constructor(

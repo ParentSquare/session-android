@@ -212,9 +212,6 @@ import org.thoughtcrime.securesms.util.isFullyScrolled
 import org.thoughtcrime.securesms.util.isNearBottom
 import org.thoughtcrime.securesms.util.push
 import org.thoughtcrime.securesms.util.toPx
-import org.thoughtcrime.securesms.webrtc.WebRtcCallActivity
-import org.thoughtcrime.securesms.webrtc.WebRtcCallActivity.Companion.ACTION_START_CALL
-import org.thoughtcrime.securesms.webrtc.WebRtcCallBridge.Companion.EXTRA_RECIPIENT_ADDRESS
 import java.io.File
 import java.util.LinkedList
 import java.util.concurrent.ExecutionException
@@ -599,11 +596,6 @@ class ConversationActivityV2 : ScreenLockActionBarActivity(), InputBarDelegate,
 
         binding.scrollToBottomButton.setOnClickListener {
             binding.conversationRecyclerView.handleScrollToBottom()
-        }
-
-        // in case a phone call is in progress, this banner is visible and should bring the user back to the call
-        binding.conversationHeader.callInProgress.setOnClickListener {
-            startActivity(WebRtcCallActivity.getCallActivityIntent(this))
         }
 
         setUpExpiredGroupBanner()
@@ -1512,49 +1504,7 @@ class ConversationActivityV2 : ScreenLockActionBarActivity(), InputBarDelegate,
 
     // region Interaction
     private fun callRecipient() {
-
-        // if the user is blocked, show unblock modal
-        if(viewModel.recipient.blocked){
-            unblock()
-            return
-        }
-
-        // if the user has not enabled voice/video calls
-        if (!TextSecurePreferences.isCallNotificationsEnabled(this)) {
-            showSessionDialog {
-                title(R.string.callsPermissionsRequired)
-                text(R.string.callsPermissionsRequiredDescription)
-                button(R.string.sessionSettings, R.string.AccessibilityId_sessionSettings) {
-                    val intent = Intent(context, PrivacySettingsActivity::class.java)
-                    // allow the screen to auto scroll to the appropriate toggle
-                    intent.putExtra(PrivacySettingsActivity.SCROLL_AND_TOGGLE_KEY, CALL_NOTIFICATIONS_ENABLED)
-                    context.startActivity(intent)
-                }
-                cancelButton()
-            }
-            return
-        }
-        // or if the user has not granted audio/microphone permissions
-        else if (!Permissions.hasAll(this, Manifest.permission.RECORD_AUDIO)) {
-            Log.d("Loki", "Attempted to make a call without audio permissions")
-
-            Permissions.with(this)
-                .request(Manifest.permission.RECORD_AUDIO)
-                .withPermanentDenialDialog(
-                    getSubbedString(R.string.permissionsMicrophoneAccessRequired,
-                        APP_NAME_KEY to getString(R.string.app_name))
-                )
-                .execute()
-
-            return
-        }
-
-        WebRtcCallActivity.getCallActivityIntent(this)
-            .apply {
-                action = ACTION_START_CALL
-                putExtra(EXTRA_RECIPIENT_ADDRESS, viewModel.recipient.address)
-            }
-            .let(::startActivity)
+        // Calling disabled for interview build
     }
 
     fun block() {

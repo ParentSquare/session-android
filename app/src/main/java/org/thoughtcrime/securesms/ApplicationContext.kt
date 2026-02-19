@@ -66,8 +66,6 @@ import org.thoughtcrime.securesms.migration.DatabaseMigrationManager
 import org.thoughtcrime.securesms.notifications.NotificationChannels
 import org.thoughtcrime.securesms.providers.BlobUtils
 import org.thoughtcrime.securesms.service.KeyCachingService
-import org.webrtc.PeerConnectionFactory
-import org.webrtc.PeerConnectionFactory.InitializationOptions
 import java.security.Security
 import javax.inject.Inject
 import javax.inject.Provider
@@ -149,7 +147,6 @@ class ApplicationContext : Application(), DefaultLifecycleObserver, Configuratio
         SnodeModule.sharedLazy = snodeModule
         SSKEnvironment.sharedLazy = sskEnvironment
 
-        initializeWebRtc()
         initializeBlobProvider()
         refresh()
 
@@ -235,16 +232,6 @@ class ApplicationContext : Application(), DefaultLifecycleObserver, Configuratio
     private fun initializeCrashHandling() {
         val originalHandler = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler(UncaughtExceptionLogger(originalHandler!!))
-    }
-
-    private fun initializeWebRtc() {
-        try {
-            PeerConnectionFactory.initialize(
-                InitializationOptions.builder(this).createInitializationOptions()
-            )
-        } catch (e: UnsatisfiedLinkError) {
-            Log.w(TAG, e)
-        }
     }
 
     private fun initializeBlobProvider() {
